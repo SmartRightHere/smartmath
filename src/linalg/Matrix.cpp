@@ -1,11 +1,18 @@
-#include <iostream>  
+#include <iostream> 
+#include <vector> 
 #include <Windows.h>
+
 using namespace std;
 
 class Matrix {
+private:
+    size_t rows_;
+    size_t cols_;
+    vector<double> data_;
+
 public:
     Matrix(size_t rows, size_t cols)
-        :rows_(rows), cols_(cols) {
+        :rows_(rows), cols_(cols), data_(rows*cols) {
 
         }
 
@@ -21,9 +28,14 @@ public:
         "\tcolumns: " << cols_ << endl;
     }
 
-private:
-    size_t rows_;
-    size_t cols_;
+    double& operator()(size_t i, size_t j) {
+        return data_[i*cols_+j];
+    }
+
+    const double& operator()(size_t i, size_t j) const {
+        return data_[i*cols_+j];
+    }
+
 };
 
 int main() {
