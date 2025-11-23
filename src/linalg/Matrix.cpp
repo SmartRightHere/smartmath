@@ -19,11 +19,20 @@ public:
     size_t rows() const { return rows_; }
     size_t cols() const { return cols_; }
 
-    bool is_squared() {
+    bool is_squared() const {
         return rows_ == cols_;
     }
 
-    void print() {
+    bool is_zero() const {
+        for (double value : data_) {
+            if(abs(value) > 1e-12) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    void print() const {
         cout << "rows: " << rows_ <<
         "\tcolumns: " << cols_ << endl;
     }
