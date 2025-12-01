@@ -18,8 +18,8 @@ public:
 
         }
 
-    size_t rows() const { return rows_; }
-    size_t cols() const { return cols_; }
+    size_t rows() const noexcept { return rows_; }
+    size_t cols() const noexcept { return cols_; }
 
     bool is_squared() const {
         return rows_ == cols_;
@@ -71,6 +71,21 @@ public:
                 
         }
 
+    Matrix operator-(const Matrix& other) const {
+            if(cols() != other.cols() || rows() != other.rows()) {
+                throw invalid_argument("matrix dimensions are incompatible for subtraction");
+            }
+            Matrix result(rows(), cols());
+
+            for(size_t i=0; i < rows(); i++) {
+                for(size_t j=0; j < cols(); j++) {
+                    result(i, j) = (*this)(i, j) - other(i,j);
+                }
+            }
+            return result;
+                
+        }
+
     Matrix operator*(const Matrix& other) const {
             if(cols() != other.rows()) {
                 throw invalid_argument("matrix dimensions are incompatible for multiplication");
@@ -89,7 +104,23 @@ public:
             return result;
         }
 
+    Matrix operator*(double scalar) const {
+        Matrix result(rows(), cols());
+
+            for(size_t i=0; i < rows(); i++) {
+                for(size_t j=0; j < cols(); j++) {
+                    result(i, j) = (*this)(i, j) * scalar;
+                }
+            }
+            return result;
+                
+        }
+
 };
+
+Matrix operator*(const double scalar, const Matrix& m) {
+    return m * scalar;
+}
 
 int main() {
     SetConsoleCP(1251);
