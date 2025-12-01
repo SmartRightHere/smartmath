@@ -1,5 +1,7 @@
 #include <iostream> 
 #include <vector> 
+#include <stdexcept>
+#include <cmath>
 #include <Windows.h>
 
 using namespace std;
@@ -38,12 +40,40 @@ public:
     }
 
     double& operator()(size_t i, size_t j) {
-        return data_[i*cols_+j];
+        if(i >= rows_ || j >= cols_) {
+            throw out_of_range("matrix index out of bounds");
+        } else {
+            return data_[i*cols_+j];
+        }
+        
     }
 
     const double& operator()(size_t i, size_t j) const {
-        return data_[i*cols_+j];
+        if(i >= rows_ || j >= cols_) {
+            throw out_of_range("matrix index out of bounds");
+        } else {
+            return data_[i*cols_+j];
+        }
     }
+
+    Matrix operator*(const Matrix& other) const {
+            if(cols() != other.rows()) {
+                throw invalid_argument("matrix dimensions are incompatible for multiplication");
+            } else {
+                Matrix result(rows(), other.cols());
+
+                for(size_t i=0; i < rows(); i++) {
+                    for(size_t j=0; j < other.cols(); j++) {
+                        double sum = 0.0;
+                        for(size_t k=0; k < cols(); k++) {
+                            sum += (*this)(i, k)*other(k, j);
+                        }
+                        result(i, j) = sum;
+                    }
+                }
+                return result;
+            }
+        }
 
 };
 
