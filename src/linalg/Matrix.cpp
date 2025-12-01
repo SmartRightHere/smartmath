@@ -56,23 +56,37 @@ public:
         }
     }
 
+    Matrix operator+(const Matrix& other) const {
+            if(cols() != other.cols() || rows() != other.rows()) {
+                throw invalid_argument("matrix dimensions are incompatible for addition");
+            }
+            Matrix result(rows(), cols());
+
+            for(size_t i=0; i < rows(); i++) {
+                for(size_t j=0; j < cols(); j++) {
+                    result(i, j) = (*this)(i, j) + other(i,j);
+                }
+            }
+            return result;
+                
+        }
+
     Matrix operator*(const Matrix& other) const {
             if(cols() != other.rows()) {
                 throw invalid_argument("matrix dimensions are incompatible for multiplication");
-            } else {
-                Matrix result(rows(), other.cols());
-
-                for(size_t i=0; i < rows(); i++) {
-                    for(size_t j=0; j < other.cols(); j++) {
-                        double sum = 0.0;
-                        for(size_t k=0; k < cols(); k++) {
-                            sum += (*this)(i, k)*other(k, j);
-                        }
-                        result(i, j) = sum;
-                    }
-                }
-                return result;
             }
+            Matrix result(rows(), other.cols());
+
+            for(size_t i=0; i < rows(); i++) {
+                for(size_t j=0; j < other.cols(); j++) {
+                    double sum = 0.0;
+                    for(size_t k=0; k < cols(); k++) {
+                        sum += (*this)(i, k)*other(k, j);
+                    }
+                    result(i, j) = sum;
+                }
+            }
+            return result;
         }
 
 };
