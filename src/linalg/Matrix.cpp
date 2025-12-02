@@ -2,7 +2,8 @@
 #include <vector> 
 #include <stdexcept>
 #include <cmath>
-#include <assert.h>
+#include <cassert>
+#include <algorithm>
 #include <Windows.h>
 
 using namespace std;
@@ -35,20 +36,29 @@ public:
     }
 
     Matrix transpose() const {
-                    Matrix result(cols(), rows());
+        Matrix result(cols(), rows());
 
-            for(size_t i=0; i < rows(); ++i) {
-                for(size_t j=0; j < cols(); ++j) {
-                    result(j, i) = (*this)(i, j);
-                }
+        for(size_t i=0; i < rows(); ++i) {
+            for(size_t j=0; j < cols(); ++j) {
+                result(j, i) = (*this)(i, j);
             }
-            return result;
+        }
+        return result;
     }
 
-    void print() const {
-        cout << "rows: " << rows_ <<
-        "\tcolumns: " << cols_ << endl;
-}
+    void fill(double value) {
+        std::fill(data_.begin(), data_.end(), value);
+        return;
+    }
+
+    static Matrix identity(size_t n) {
+        Matrix result(n, n);
+
+        for(size_t i=0; i < n; ++i) {
+            result(i, i) = 1.0;
+        }
+        return result;
+    }
 
     double& operator()(size_t i, size_t j) {
         if(i >= rows_ || j >= cols_) {
@@ -68,61 +78,61 @@ public:
     }
 
     Matrix operator+(const Matrix& other) const {
-            if(cols() != other.cols() || rows() != other.rows()) {
-                throw invalid_argument("matrix dimensions are incompatible for addition");
-            }
-            Matrix result(rows(), cols());
-
-            for(size_t i=0; i < rows(); ++i) {
-                for(size_t j=0; j < cols(); ++j) {
-                    result(i, j) = (*this)(i, j) + other(i,j);
-                }
-            }
-            return result;
+        if(cols() != other.cols() || rows() != other.rows()) {
+            throw invalid_argument("matrix dimensions are incompatible for addition");
         }
+        Matrix result(rows(), cols());
+
+        for(size_t i=0; i < rows(); ++i) {
+            for(size_t j=0; j < cols(); ++j) {
+                result(i, j) = (*this)(i, j) + other(i,j);
+            }
+        }
+        return result;
+    }
 
     Matrix operator-(const Matrix& other) const {
-            if(cols() != other.cols() || rows() != other.rows()) {
-                throw invalid_argument("matrix dimensions are incompatible for subtraction");
-            }
-            Matrix result(rows(), cols());
-
-            for(size_t i=0; i < rows(); ++i) {
-                for(size_t j=0; j < cols(); ++j) {
-                    result(i, j) = (*this)(i, j) - other(i,j);
-                }
-            }
-            return result;   
+        if(cols() != other.cols() || rows() != other.rows()) {
+            throw invalid_argument("matrix dimensions are incompatible for subtraction");
         }
+        Matrix result(rows(), cols());
+
+        for(size_t i=0; i < rows(); ++i) {
+            for(size_t j=0; j < cols(); ++j) {
+                result(i, j) = (*this)(i, j) - other(i,j);
+            }
+        }
+        return result;   
+    }
 
     Matrix operator*(const Matrix& other) const {
-            if(cols() != other.rows()) {
-                throw invalid_argument("matrix dimensions are incompatible for multiplication");
-            }
-            Matrix result(rows(), other.cols());
-
-            for(size_t i=0; i < rows(); ++i) {
-                for(size_t j=0; j < other.cols(); ++j) {
-                    double sum = 0.0;
-                    for(size_t k=0; k < cols(); ++k) {
-                        sum += (*this)(i, k)*other(k, j);
-                    }
-                    result(i, j) = sum;
-                }
-            }
-            return result;
+        if(cols() != other.rows()) {
+            throw invalid_argument("matrix dimensions are incompatible for multiplication");
         }
+        Matrix result(rows(), other.cols());
+
+        for(size_t i=0; i < rows(); ++i) {
+            for(size_t j=0; j < other.cols(); ++j) {
+                double sum = 0.0;
+                for(size_t k=0; k < cols(); ++k) {
+                    sum += (*this)(i, k)*other(k, j);
+                }
+                result(i, j) = sum;
+            }
+        }
+        return result;
+    }
 
     Matrix operator*(double scalar) const {
         Matrix result(rows(), cols());
 
-            for(size_t i=0; i < rows(); ++i) {
-                for(size_t j=0; j < cols(); ++j) {
-                    result(i, j) = (*this)(i, j) * scalar;
-                }
+        for(size_t i=0; i < rows(); ++i) {
+            for(size_t j=0; j < cols(); ++j) {
+                result(i, j) = (*this)(i, j) * scalar;
             }
-            return result;     
         }
+        return result;     
+    }
 
     bool operator==(const Matrix& other) const {
         if(cols() != other.cols() || rows() != other.rows()) {
