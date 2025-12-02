@@ -2,6 +2,7 @@
 #include <vector> 
 #include <stdexcept>
 #include <cmath>
+#include <assert.h>
 #include <Windows.h>
 
 using namespace std;
@@ -33,6 +34,17 @@ public:
         return true;
     }
 
+    Matrix transpose() const {
+                    Matrix result(cols(), rows());
+
+            for(size_t i=0; i < rows(); ++i) {
+                for(size_t j=0; j < cols(); ++j) {
+                    result(j, i) = (*this)(i, j);
+                }
+            }
+            return result;
+    }
+
     void print() const {
         cout << "rows: " << rows_ <<
         "\tcolumns: " << cols_ << endl;
@@ -61,8 +73,8 @@ public:
             }
             Matrix result(rows(), cols());
 
-            for(size_t i=0; i < rows(); i++) {
-                for(size_t j=0; j < cols(); j++) {
+            for(size_t i=0; i < rows(); ++i) {
+                for(size_t j=0; j < cols(); ++j) {
                     result(i, j) = (*this)(i, j) + other(i,j);
                 }
             }
@@ -75,8 +87,8 @@ public:
             }
             Matrix result(rows(), cols());
 
-            for(size_t i=0; i < rows(); i++) {
-                for(size_t j=0; j < cols(); j++) {
+            for(size_t i=0; i < rows(); ++i) {
+                for(size_t j=0; j < cols(); ++j) {
                     result(i, j) = (*this)(i, j) - other(i,j);
                 }
             }
@@ -89,10 +101,10 @@ public:
             }
             Matrix result(rows(), other.cols());
 
-            for(size_t i=0; i < rows(); i++) {
-                for(size_t j=0; j < other.cols(); j++) {
+            for(size_t i=0; i < rows(); ++i) {
+                for(size_t j=0; j < other.cols(); ++j) {
                     double sum = 0.0;
-                    for(size_t k=0; k < cols(); k++) {
+                    for(size_t k=0; k < cols(); ++k) {
                         sum += (*this)(i, k)*other(k, j);
                     }
                     result(i, j) = sum;
@@ -104,8 +116,8 @@ public:
     Matrix operator*(double scalar) const {
         Matrix result(rows(), cols());
 
-            for(size_t i=0; i < rows(); i++) {
-                for(size_t j=0; j < cols(); j++) {
+            for(size_t i=0; i < rows(); ++i) {
+                for(size_t j=0; j < cols(); ++j) {
                     result(i, j) = (*this)(i, j) * scalar;
                 }
             }
@@ -117,8 +129,8 @@ public:
             return false;
         }
         
-        for(size_t i=0; i < rows(); i++) {
-            for(size_t j=0; j < cols(); j++) {
+        for(size_t i=0; i < rows(); ++i) {
+            for(size_t j=0; j < cols(); ++j) {
                 if (abs((*this)(i, j) - other(i, j)) > 1e-12) {
                     return false;
                 }
@@ -136,11 +148,40 @@ Matrix operator*(const double scalar, const Matrix& m) {
     return m * scalar;
 }
 
+ostream& operator<<(ostream& os, const Matrix& m) {
+    for(size_t i=0; i < m.rows(); ++i) {
+        for(size_t j=0; j < m.cols(); ++j) {
+            os << m(i, j);
+            if (j + 1 < m.cols()) os << "\t";
+        }
+        os << "\n";
+    }
+    return os;
+}
+
 int main() {
     SetConsoleCP(1251);
     SetConsoleOutputCP(1251);
 
-    Matrix matrix(3, 5);
-    matrix.print();
-    cout << (matrix.is_squared() ? "Yes" : "No") << endl;
+    // addition test
+    Matrix A(2, 2); A(0,0)=1; A(0,1)=2; A(1,0)=3; A(1,1)=4;
+    Matrix B = A + A;
+    assert((B(0,0) == 2.0) && (B(1,1) == 8.0));
+
+    // scalar multiplication test
+    Matrix C = 2.0 * A;
+    assert(C == B);
+
+    // transposition test
+    Matrix D = A.transpose();
+    assert(D(0,1) == A(1,0));
+
+    // exception test
+    try {
+        Matrix X(2, 3), Y(4, 5);
+        auto Z = X * Y; // should throw an exception
+        assert(false); // it shouldn't reach here
+    } catch (const std::invalid_argument&) {
+        // OK
+    }
 }
