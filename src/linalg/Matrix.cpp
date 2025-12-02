@@ -22,8 +22,7 @@ public:
     size_t cols() const noexcept { return cols_; }
 
     bool is_squared() const {
-        return rows_ == cols_;
-    }
+        return rows_ == cols_; }
 
     bool is_zero() const {
         for (double value : data_) {
@@ -37,7 +36,7 @@ public:
     void print() const {
         cout << "rows: " << rows_ <<
         "\tcolumns: " << cols_ << endl;
-    }
+}
 
     double& operator()(size_t i, size_t j) {
         if(i >= rows_ || j >= cols_) {
@@ -68,7 +67,6 @@ public:
                 }
             }
             return result;
-                
         }
 
     Matrix operator-(const Matrix& other) const {
@@ -82,8 +80,7 @@ public:
                     result(i, j) = (*this)(i, j) - other(i,j);
                 }
             }
-            return result;
-                
+            return result;   
         }
 
     Matrix operator*(const Matrix& other) const {
@@ -112,9 +109,26 @@ public:
                     result(i, j) = (*this)(i, j) * scalar;
                 }
             }
-            return result;
-                
+            return result;     
         }
+
+    bool operator==(const Matrix& other) const {
+        if(cols() != other.cols() || rows() != other.rows()) {
+            return false;
+        }
+        
+        for(size_t i=0; i < rows(); i++) {
+            for(size_t j=0; j < cols(); j++) {
+                if (abs((*this)(i, j) - other(i, j)) > 1e-12) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    bool operator!=(const Matrix& other) const {
+        return !(*this == other); }
 
 };
 
