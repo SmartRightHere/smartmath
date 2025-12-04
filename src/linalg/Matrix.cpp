@@ -105,6 +105,10 @@ public:
         return result;   
     }
 
+    Matrix operator-() const {
+        return (*this) * (-1.0);
+    }
+
     Matrix operator*(const Matrix& other) const {
         if(cols() != other.rows()) {
             throw invalid_argument("matrix dimensions are incompatible for multiplication");
@@ -151,6 +155,41 @@ public:
 
     bool operator!=(const Matrix& other) const {
         return !(*this == other); }
+
+    Matrix& operator+=(const Matrix& other) {
+        if(cols() != other.cols() || rows() != other.rows()) {
+            throw invalid_argument("matrix dimensions are incompatible for addition");
+        }
+        for(size_t i=0; i < rows(); ++i) {
+            for(size_t j=0; j < cols(); ++j) {
+                (*this)(i, j) += other(i,j);
+            }
+        }
+
+        return *this;
+    }
+
+    Matrix& operator-=(const Matrix& other) {
+        if(cols() != other.cols() || rows() != other.rows()) {
+            throw invalid_argument("matrix dimensions are incompatible for subtraction");
+        }
+        for(size_t i=0; i < rows(); ++i) {
+            for(size_t j=0; j < cols(); ++j) {
+                (*this)(i, j) -= other(i,j);
+            }
+        }
+        
+        return *this;
+    }
+
+    Matrix& operator*=(double scalar) {
+        for(size_t i=0; i < rows(); ++i) {
+            for(size_t j=0; j < cols(); ++j) {
+                (*this)(i, j) *= scalar;
+            }
+        }
+        return *this;
+    }
 
 };
 
