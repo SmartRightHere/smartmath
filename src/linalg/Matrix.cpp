@@ -13,6 +13,7 @@ private:
     size_t rows_;
     size_t cols_;
     vector<double> data_;
+    static constexpr double EPS = 1e-12;
 
 public:
     Matrix(size_t rows, size_t cols)
@@ -145,7 +146,7 @@ public:
         
         for(size_t i=0; i < rows(); ++i) {
             for(size_t j=0; j < cols(); ++j) {
-                if (abs((*this)(i, j) - other(i, j)) > 1e-12) {
+                if (abs((*this)(i, j) - other(i, j)) > EPS) {
                     return false;
                 }
             }
