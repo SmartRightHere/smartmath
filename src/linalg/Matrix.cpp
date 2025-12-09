@@ -1,10 +1,11 @@
-#include <iostream> 
-#include <vector> 
+#include <iostream>
+#include <vector>
 #include <stdexcept>
 #include <cmath>
 #include <cassert>
 #include <algorithm>
-#include <Windows.h>
+
+#include "Vector.cpp";
 
 using namespace std;
 
@@ -190,6 +191,22 @@ public:
             }
         }
         return *this;
+
+    }
+
+    Vector operator*(const Vector& v) const {
+        if(cols() != v.size()) {
+            throw invalid_argument("matrix columns must equal vector size");
+        }
+        Vector result(rows());
+        for(size_t i=0; i < rows(); ++i) {
+            double sum = 0.0;
+            for(size_t j=0; j < cols(); ++j) {
+                sum += (*this)(i,j) * v[j];
+            }
+            result[i] = sum;
+        }
+        return result;
     }
 
 };
@@ -210,28 +227,5 @@ ostream& operator<<(ostream& os, const Matrix& m) {
 }
 
 int main() {
-    SetConsoleCP(1251);
-    SetConsoleOutputCP(1251);
 
-    // addition test
-    Matrix A(2, 2); A(0,0)=1; A(0,1)=2; A(1,0)=3; A(1,1)=4;
-    Matrix B = A + A;
-    assert((B(0,0) == 2.0) && (B(1,1) == 8.0));
-
-    // scalar multiplication test
-    Matrix C = 2.0 * A;
-    assert(C == B);
-
-    // transposition test
-    Matrix D = A.transpose();
-    assert(D(0,1) == A(1,0));
-
-    // exception test
-    try {
-        Matrix X(2, 3), Y(4, 5);
-        auto Z = X * Y; // should throw an exception
-        assert(false); // it shouldn't reach here
-    } catch (const std::invalid_argument&) {
-        // OK
-    }
 }

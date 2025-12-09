@@ -3,7 +3,6 @@
 #include <initializer_list>
 #include <stdexcept>
 #include <cmath>
-#include <Windows.h>
 
 using namespace std;
 
